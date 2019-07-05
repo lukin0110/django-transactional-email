@@ -1,7 +1,7 @@
 """
 Constants & configuration variables
 """
-from os import environ as env
+from django.conf import settings
 
 # Prefix to add to all templates names.
 # The prefix is required to create a separate namespace for the transactional
@@ -20,7 +20,8 @@ TEMPLATE_CONTENT_DEFAULT = '<h1>Default mail</h1>' \
 DEFAULT_SUBJECT = 'Automatically generated subject'
 
 # https://docs.djangoproject.com/en/2.2/ref/settings/#default-from-email
-DEFAULT_FROM_EMAIL = env.get(
+DEFAULT_FROM_EMAIL = getattr(
+    settings,
     'DEFAULT_FROM_EMAIL',
     'Test Jeffrey <jeffrey@dudeism.com>'
 )
