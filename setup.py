@@ -1,5 +1,12 @@
+import os
+import sys
 import transactional_email
 from setuptools import setup, find_packages
+
+# python setup.py publish
+if sys.argv[-1] == 'publish':
+    os.system("python setup.py sdist upload")
+    sys.exit()
 
 
 def read(f):

@@ -1,6 +1,6 @@
 # django-transactional-email
 
-`transactional_email` is a Django app that manages the configuration and templates of *transactional emails*. 
+`transactional_email` is a Django app that manages templates and the configurations of *transactional emails*. 
 A transactional email is a type of email that's triggered by a user action on a website or mobile app. Some common 
 examples of transactional emails include password resets, shipping confirmations, invoices and receipts, account 
 notifications, social media updates, and welcome emails.
@@ -24,3 +24,4 @@ However, you can still use Transactional Email services as email backend to actu
 - use codemirror html editor for template editing
 - push to pypi
 - dump templates from db to disk
+- explain usage in README

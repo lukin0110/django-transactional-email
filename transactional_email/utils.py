@@ -107,14 +107,28 @@ def render(config_name: str, to_email: str, context: dict) -> Message:
     )
 
 
-def send(subject: str, from_email: str, to_email: str, body: str) -> None:
+def send(subject: str, from_email: str, to_email: str, body: str, connection=None) -> None:
+    """
+    Send a mail and log it.
+
+    Args:
+        subject: subject of the mail
+        from_email: from email
+        to_email: to email
+        body: body of the mail
+        connection: Django Email backend to use
+
+    Returns:
+        None: nada
+    """
     mailed = False
     try:
         message = EmailMessage(
             subject=subject,
             body=body,
             to=[to_email],
-            from_email=from_email
+            from_email=from_email,
+            connection=connection
         )
         message.content_subtype = "html"
         message.send(fail_silently=False)
@@ -133,6 +147,18 @@ def send(subject: str, from_email: str, to_email: str, body: str) -> None:
     )
 
 
-def issue(config_name: str, to_email: str, context) -> None:
+def issue(config_name: str, to_email: str, context: dict, connection=None) -> None:
+    """
+    Renders and & sends a mail.
+
+    Args:
+        config_name:
+        to_email:
+        context:
+        connection:
+
+    Returns:
+        None: nada
+    """
     message = render(config_name, to_email, context)
-    send(message.subject, message.from_email, message.to_email, message.body)
+    send(message.subject, message.from_email, message.to_email, message.body, connection)

@@ -56,7 +56,7 @@ class TemplateVersionAdmin(admin.ModelAdmin):
 
 @admin.register(MailConfig)
 class MailConfigAdmin(admin.ModelAdmin):
-    list_display = ('template', 'name', 'show_description', 'updated')
+    list_display = ('name', 'template', 'show_description', 'updated')
     search_fields = ('template__name', 'name', 'description')
     autocomplete_fields = ('template',)
 
