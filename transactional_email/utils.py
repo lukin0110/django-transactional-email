@@ -121,7 +121,12 @@ def send(subject: str, from_email: str, to_email: str, body: str, connection=Non
     Returns:
         None: nada
     """
+    def _classname(klass):
+        return f'{klass.__module__}.{klass.__name__}'
+
     mailed = False
+    class_name = None
+    message_id = None
     try:
         message = EmailMessage(
             subject=subject,
@@ -133,8 +138,13 @@ def send(subject: str, from_email: str, to_email: str, body: str, connection=Non
         message.content_subtype = "html"
         message.send(fail_silently=False)
         mailed = True
+        class_name = _classname(message.connection.__class__)
+
+        # If Anymail is used as EmailBackend we'll try to get the message_id
+        if hasattr(message, 'anymail_status'):
+            message_id = message.anymail_status.message_id
     except Exception:
-        logger.warning('Failed to send e-mail message to: %s', to_email)
+        logger.exception('Failed to send e-mail message to: %s', to_email)
 
     EmailLog.objects.create(
         from_email=from_email,
@@ -142,8 +152,8 @@ def send(subject: str, from_email: str, to_email: str, body: str, connection=Non
         subject=subject,
         body=body,
         ok=mailed,
-        service=None,
-        message_id=None
+        service=class_name,
+        message_id=message_id
     )
 
 

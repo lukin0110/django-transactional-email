@@ -163,7 +163,6 @@ class EmailLog(models.Model):
     )
     body = models.TextField(
         null=False,
-        max_length=1024,
     )
     ok = models.BooleanField(
         null=False,
@@ -173,7 +172,7 @@ class EmailLog(models.Model):
     service = models.CharField(
         null=True,
         blank=True,
-        max_length=20,
+        max_length=100,
         help_text='Which services was used to send this e-mail. '
                   'Eg: sendgrid, mailgun, etc'
     )

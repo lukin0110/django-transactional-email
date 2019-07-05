@@ -7,7 +7,7 @@ top-level defined functions, which are exported by __all__.
 To avoid import hell when Django is loading it's required to wrap all the
 render and send functions and use local imports.
 """
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 default_app_config = 'transactional_email.apps.TransactionalEmailConfig'
 

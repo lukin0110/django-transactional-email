@@ -1,4 +1,4 @@
-from textwrap import shorten
+from textwrap import shorten, fill
 from django.contrib import admin
 from django.contrib.postgres.fields import JSONField
 from django.conf.urls import url
@@ -69,8 +69,8 @@ class MailConfigAdmin(admin.ModelAdmin):
 
 @admin.register(EmailLog)
 class EmailLogAdmin(admin.ModelAdmin):
-    list_display = ['when', 'from_email', 'to_email', 'subject', 'service',
-                    'ok', 'show_actions']
+    list_display = ['when', 'from_email', 'to_email', 'subject', 'ok',
+                    'show_service', 'show_message_id',  'show_actions']
     list_filter = ['ok', 'service']
     readonly_fields = ['when', 'from_email', 'to_email', 'subject', 'body',
                        'ok', 'service', 'message_id']
@@ -96,6 +96,19 @@ class EmailLogAdmin(admin.ModelAdmin):
     def raw_view(self, request, id, *args, **kwargs):
         record = EmailLog.objects.get(pk=id)
         return HttpResponse(record.body)
+
+    def show_message_id(self, obj: EmailLog) -> str:
+        if obj.message_id:
+            return shorten(fill(obj.message_id, 20, break_long_words=True), width=23, placeholder='...')
+        return ''
+    show_message_id.short_description = 'Message ID'
+
+    def show_service(self, obj: EmailLog):
+        if obj.service:
+            arr = obj.service.split('.')
+            return '.'.join(arr[len(arr)-2:])
+        return None
+    show_service.short_description = 'Service'
 
     def show_actions(self, obj: EmailLog):
         return format_html(
