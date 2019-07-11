@@ -25,3 +25,9 @@ DEFAULT_FROM_EMAIL = getattr(
     'DEFAULT_FROM_EMAIL',
     'Test Jeffrey <jeffrey@dudeism.com>'
 )
+
+BASE_URL = getattr(
+    settings,
+    'TRANSACTIONAL_EMAIL_BASE_URL',
+    ''
+)
