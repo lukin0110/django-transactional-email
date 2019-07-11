@@ -10,14 +10,30 @@ from django.utils.html import format_html
 from .models import Template, TemplateVersion, MailConfig, EmailLog
 
 
+class SuperUserMixin(object):
+    """
+    Templates, TemplateVersion & MailConfigs should not be managed from the
+    Admin panel (only Super Users). The custom views must be used to manage
+    templates & configs.
+    """
+    def has_add_permission(self, request):
+        return request.user.is_superuser
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+
 @admin.register(Template)
-class TemplateAdmin(admin.ModelAdmin):
+class TemplateAdmin(admin.ModelAdmin, SuperUserMixin):
     list_display = ('pk', 'name', 'created')
     search_fields = ('name',)
 
 
 @admin.register(TemplateVersion)
-class TemplateVersionAdmin(admin.ModelAdmin):
+class TemplateVersionAdmin(admin.ModelAdmin, SuperUserMixin):
     list_display = ('template', 'name', 'active', 'updated', 'show_actions')
     list_filter = ('active',)
     search_fields = ('template__name', 'name')
@@ -55,7 +71,7 @@ class TemplateVersionAdmin(admin.ModelAdmin):
 
 
 @admin.register(MailConfig)
-class MailConfigAdmin(admin.ModelAdmin):
+class MailConfigAdmin(admin.ModelAdmin, SuperUserMixin):
     list_display = ('name', 'template', 'show_description', 'updated')
     search_fields = ('template__name', 'name', 'description')
     autocomplete_fields = ('template',)
@@ -76,11 +92,14 @@ class EmailLogAdmin(admin.ModelAdmin):
                        'ok', 'service', 'message_id']
     search_fields = ['subject', 'body', 'from_email', 'to_email']
 
-    def has_delete_permission(self, request, obj=None):
-        return True
-
     def has_add_permission(self, request):
         return False
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_delete_permission(self, request, obj=None):
+        return True
 
     def get_urls(self):
         urls = super().get_urls()

@@ -19,9 +19,63 @@ However, you can still use Transactional Email services as email backend to actu
 [Anymail](https://github.com/anymail/django-anymail).
 
 
+## Setup
+
+#### 1. Install python package
+```bash
+pip install django-transactional-email
+```
+
+#### 2. Add the Django app
+Add `transactional_email` to `INSTALLED_APPS` in `settings.py`:
+
+```python
+INSTALLED_APPS = [
+    ...
+    'transactional_email',
+    ...
+]
+```
+
+#### 3. Add the template loader
+Add `transactional_email.loader.DatabaseLoader` to `TEMPLATES.OPTIONS.loaders` in `settings.py`:
+
+It should look something like this:
+```python
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': False,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+                'transactional_email.loader.DatabaseLoader',
+            ]
+        },
+    }
+]
+```
+
+#### 4. Configure url patterns
+Add `transactional_email.urls` to the url patters in `urls.py`:
+```python
+urlpatterns = [
+    ...
+    path('transactional_email/', include('transactional_email.urls')),
+    ...
+]
+```
+
+
 ## TODO
-- send test mail via Admin 
 - use codemirror html editor for template editing
 - push to pypi
 - dump templates from db to disk
-- explain usage in README
