@@ -33,7 +33,7 @@ def send(subject: str,
          from_email: str,
          to_email: str,
          body: str,
-         connection=None) -> None:
+         connection=None) -> int:
     """
     Send a mail and log it.
 
@@ -45,13 +45,13 @@ def send(subject: str,
         connection: Django Email backend to use
 
     Returns:
-        None: nada
+        int: the pk of the email log
     """
     from .utils import send as _send
-    _send(subject, from_email, to_email, body, connection)
+    return _send(subject, from_email, to_email, body, connection)
 
 
-def issue(config_name: str, to_email: str, context, connection=None) -> None:
+def issue(config_name: str, to_email: str, context, connection=None) -> int:
     """
     Renders and & sends a mail.
 
@@ -62,10 +62,10 @@ def issue(config_name: str, to_email: str, context, connection=None) -> None:
         connection:
 
     Returns:
-        None: nada
+        int: the pk of the email log
     """
     from .utils import issue as _issue
-    _issue(config_name, to_email, context, connection)
+    return _issue(config_name, to_email, context, connection)
 
 
 __all__ = [

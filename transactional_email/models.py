@@ -36,6 +36,13 @@ class Template(models.Model):
                 self.name = f'{TEMPLATE_PREFIX}{self.name}'
         super(Template, self).save(*args, **kwargs)
 
+    def versions(self):
+        return self.templateversion_set.all().order_by('-active', '-created')
+
+
+def _default_name():
+    return f'v{now().strftime("%Y-%m-%d-%H:%M:%S:%f")}'
+
 
 class TemplateVersionManager(models.Manager):
     def reset_active(self, instance) -> None:
@@ -52,9 +59,12 @@ class TemplateVersionManager(models.Manager):
         qs = super().get_queryset()
         return qs.get(template__name=template_name, active=True)
 
-
-def _default_name():
-    return f'v{now().strftime("%Y-%m-%d-%H:%M:%S:%f")}'
+    def duplicate(self, pk: int):
+        obj = super().get(pk=pk)
+        obj.name = _default_name()
+        obj.pk = None
+        obj.save()
+        return obj.pk
 
 
 class TemplateVersion(models.Model):
@@ -185,6 +195,13 @@ class EmailLog(models.Model):
 
     class Meta:
         ordering = ['-when']
+
+    @property
+    def service_short(self):
+        if self.service:
+            arr = self.service.split('.')
+            return '.'.join(arr[len(arr)-2:])
+        return None
 
 
 @receiver(post_save,

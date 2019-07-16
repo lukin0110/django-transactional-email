@@ -1,10 +1,15 @@
-{% extends "transactional_email_web/base.html" %}
-{% load static %}
-{% load i18n %}
+{% extends "transactional_email_web/base2.html" %}
+{% load static i18n %}
+{% block page-title %}Mail Configurations{% endblock %}
+{% block title %}Mail Configurations{% endblock %}
+
+{% block toolbar %}
+  <a href="{% url 'admin:transactional_email_mailconfig_add' %}" role="button" class="btn btn-info btn-sm">New Mail Config</a>
+{% endblock %}
 
 {% block content %}
-  <table class="table">
-    <thead class="thead-dark">
+  <table class="table table-striped mt-3 table-sm">
+    <thead class="thead-light">
       <tr>
         <th scope="col" style="width: 300px">Name</th>
         <th scope="col">Description</th>
@@ -21,7 +26,8 @@
           <td>{{ config.description|default_if_none:''|truncatechars:40 }}</td>
           <td>{{ config.updated }}</td>
           <td>
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal" data-name="{{ config.name }}">Test Mail</button>
+            <button type="button" class="btn btn-info btn-sm mr-1" data-toggle="modal" data-target="#modal" data-name="{{ config.name }}">Test Mail</button>
+            <a role="button" class="btn btn-info btn-sm" href="{% url 'admin:transactional_email_mailconfig_change' config.pk %}">Edit</a>
           </td>
         </tr>
       {% endfor %}
@@ -91,20 +97,7 @@
       $modal.find('.btn-primary').hide();
 
       var form = $(this);
-      var url = form.attr('action');
-
-      $.ajax({
-        url: url,
-        method: "POST",
-        data: form.serialize(),
-        success: function(data) {
-          console.log(JSON.stringify(data));
-        },
-        error: function(xhr, ajaxOptions, thrownError) {
-          $modal.find('.alert-success').hide();
-          $modal.find('.alert-danger').show().html('<pre>' + xhr.responseText + '</pre>');
-        }
-      });
+      window.TE.sendTestMail(form.serialize());
     });
   });
   </script>
