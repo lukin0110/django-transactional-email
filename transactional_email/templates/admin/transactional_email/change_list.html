@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  <li><a href="{% url 'transactional_email.index' %}" title="Go to the Transactional Email Dashboard">Open Dashboard</a></li>
+{% endblock %}
+
+{% block result_list %}
+  {{ block.super }}
+{% endblock %}

@@ -109,7 +109,7 @@ def render(config_name: str, to_email: str, context: dict) -> Message:
     )
 
 
-def send(subject: str, from_email: str, to_email: str, body: str, connection=None) -> None:
+def send(subject: str, from_email: str, to_email: str, body: str, connection=None) -> int:
     """
     Send a mail and log it.
 
@@ -121,7 +121,7 @@ def send(subject: str, from_email: str, to_email: str, body: str, connection=Non
         connection: Django Email backend to use
 
     Returns:
-        None: nada
+        int: the pk of the email log
     """
     def _classname(klass):
         return f'{klass.__module__}.{klass.__name__}'
@@ -148,7 +148,7 @@ def send(subject: str, from_email: str, to_email: str, body: str, connection=Non
     except Exception:
         logger.exception('Failed to send e-mail message to: %s', to_email)
 
-    EmailLog.objects.create(
+    msg = EmailLog.objects.create(
         from_email=from_email,
         to_email=to_email,
         subject=subject,
@@ -157,9 +157,10 @@ def send(subject: str, from_email: str, to_email: str, body: str, connection=Non
         service=class_name,
         message_id=message_id
     )
+    return msg.pk
 
 
-def issue(config_name: str, to_email: str, context: dict, connection=None) -> None:
+def issue(config_name: str, to_email: str, context: dict, connection=None) -> int:
     """
     Renders and & sends a mail.
 
@@ -170,7 +171,13 @@ def issue(config_name: str, to_email: str, context: dict, connection=None) -> No
         connection:
 
     Returns:
-        None: nada
+        int: the pk of the email log
     """
     message = render(config_name, to_email, context)
-    send(message.subject, message.from_email, message.to_email, message.body, connection)
+    return send(message.subject, message.from_email, message.to_email, message.body, connection)
+
+
+@transaction.atomic
+def delete(pk: int):
+    TemplateVersion.objects.filter(template__pk=pk).delete()
+    Template.objects.get(pk=pk).delete()
