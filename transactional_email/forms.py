@@ -4,7 +4,7 @@ from .models import TemplateVersion
 
 
 class TemplateVersionForm(forms.Form):
-    content = forms.CharField(widget=forms.Textarea)
+    content = forms.CharField(widget=forms.Textarea, required=False)
     test_data = forms.CharField(widget=forms.Textarea, required=False)
 
     def clean_content(self):

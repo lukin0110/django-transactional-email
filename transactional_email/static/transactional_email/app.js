@@ -5,8 +5,20 @@
 (function(global){
   var BASE_URL = '/transactional_email';
 
+  var _errorCallback = function(xhr, ajaxOptions, thrownError) {
+    showError(xhr.responseText);
+  };
+
+  // Construct full path to an API endpoint
   function u(path) {
     return BASE_URL + path;
+  }
+
+  // Redirect with Notification
+  function redirect(notification, data) {
+    var template_id = data['template_id'];
+    var suffix = '&t=' + new Date().getTime() + '#template-' + template_id;
+    window.location.href = '?notification=' + notification + suffix;
   }
 
   function configure(base_url) {
@@ -59,9 +71,7 @@
         console.log(JSON.stringify(data));
         window.location.href = '?notification=deleted';
       },
-      error: function(xhr, ajaxOptions, thrownError) {
-        showError(xhr.responseText);
-      }
+      error: _errorCallback
     });
   }
 
@@ -74,9 +84,7 @@
       success: function() {
         window.location.href = '?notification=activated';
       },
-      error: function(xhr, ajaxOptions, thrownError) {
-        showError(xhr.responseText);
-      }
+      error: _errorCallback
     });
   }
 
@@ -87,18 +95,37 @@
       url: u('/versions/' + pk + '/'),
       method: 'POST',
       success: function(data) {
-        var template_id = data['template_id'];
-        window.location.href = '?notification=duplicated&t=' + new Date().getTime() + '#template-' + template_id;
+        redirect('duplicated', data);
       },
-      error: function(xhr, ajaxOptions, thrownError) {
-        showError(xhr.responseText);
-      }
+      error: _errorCallback
+    });
+  }
+
+  function addVersion(template_id) {
+    console.log('Templated ID: ' + template_id);
+    $.ajax({
+      url: u('/versions/'),
+      method: 'POST',
+      data: {'template_id': template_id},
+      success: function(data) {
+        window.location.href = 'version/' + data['id'] + '/edit'
+      },
+      error: _errorCallback
     });
   }
 
   function deleteVersion(pk) {
     console.log('Delete Version: ' + pk);
-    // TODO
+    $.ajax({
+      url: u('/versions/' + pk + '/'),
+      method: 'DELETE',
+      success: function(data){
+        redirect('deleted_version', data);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        showError(xhr.responseText);
+      }
+    });
   }
 
   // Send the CSRF Token on each Ajax request
@@ -134,6 +161,7 @@
     deleteTemplate: deleteTemplate,
     makeActive: makeActive,
     duplicateVersion: duplicateVersion,
+    addVersion: addVersion,
     deleteVersion: deleteVersion
   }
 })(window);

@@ -27,12 +27,19 @@ urlpatterns = [
         views.TemplatesView.as_view(),
         name='transactional_email.templates.delete'
     ),
+    # POST creates a new Template version
+    path(
+        'v1/versions/',
+        views.TemplateVersionsView.as_view(),
+        name='transactional_email.versions.create'
+    ),
     # POST duplicates a Template version
     path(
         'v1/versions/<int:pk>/',
         views.TemplateVersionsView.as_view(),
         name='transactional_email.versions.duplicate'
     ),
+    # GET to preview a rendered template
     path(
         'v1/versions/<int:pk>/preview',
         views.TemplateVersionPreviewView.as_view(),
