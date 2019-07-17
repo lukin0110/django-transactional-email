@@ -23,7 +23,7 @@
   }
 
   function toast(message) {
-    var delay = 5000;
+    var delay = 4000;
     var $t = $('#toast');
     $t.show();
     $t.toast({delay: delay});
@@ -86,8 +86,9 @@
     $.ajax({
       url: u('/versions/' + pk + '/'),
       method: 'POST',
-      success: function() {
-        window.location.href = '?notification=duplicated';
+      success: function(data) {
+        var template_id = data['template_id'];
+        window.location.href = '?notification=duplicated&t=' + new Date().getTime() + '#template-' + template_id;
       },
       error: function(xhr, ajaxOptions, thrownError) {
         showError(xhr.responseText);

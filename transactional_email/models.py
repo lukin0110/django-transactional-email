@@ -37,7 +37,7 @@ class Template(models.Model):
         super(Template, self).save(*args, **kwargs)
 
     def versions(self):
-        return self.templateversion_set.all().order_by('-active', '-created')
+        return self.templateversion_set.all().order_by('-active', '-updated')
 
 
 def _default_name():

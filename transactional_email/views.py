@@ -1,12 +1,13 @@
+import json
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.http import Http404, JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse, get_object_or_404
 from django.views import View
 from .models import MailConfig, Template, TemplateVersion, EmailLog
-from . import conf
 from . import utils
+from .forms import TemplateVersionForm
 
 
 @login_required
@@ -64,6 +65,34 @@ def preview(request, pk: int):
     return render(request, 'transactional_email_web/preview.html', context)
 
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def edit(request, pk: int):
+    version = get_object_or_404(TemplateVersion, pk=pk)
+
+    if 'POST' == request.method:
+        form = TemplateVersionForm(request.POST)
+        if form.is_valid():
+            form.save(version)
+            _url = reverse(
+                'transactional_email.preview',
+                kwargs={'pk': version.pk}
+            ) + '?notification=updated'
+            return HttpResponseRedirect(_url)
+    else:
+        form = TemplateVersionForm(initial={
+            'content': version.content,
+            'test_data': json.dumps(version.test_data, indent=4),
+        })
+
+    context = {
+        'menu': 'templates',
+        'version': version,
+        'form': form
+    }
+    return render(request, 'transactional_email_web/edit.html', context)
+
+
 class AuthMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         user = self.request.user    # type: User
@@ -101,8 +130,12 @@ class TemplateVersionsView(AuthMixin, View):
         return JsonResponse({'id': pk})
 
     def post(self, request, pk: int):
+        """
+        Duplicate a version
+        """
         pk = TemplateVersion.objects.duplicate(pk)
-        return JsonResponse({'id': pk})
+        template = TemplateVersion.objects.get(pk=pk).template
+        return JsonResponse({'id': pk, 'template_id': template.pk})
 
 
 class TemplateVersionPreviewView(AuthMixin, View):

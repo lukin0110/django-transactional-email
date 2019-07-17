@@ -46,7 +46,7 @@
         <div class="modal-body">
           <div class="alert alert-success" role="alert" style="display: none">Mail sent</div>
           <div class="alert alert-danger" role="alert" style="display: none"></div>
-          <form action="{% url 'transactional_email.test_mail' %}" method="post" id="test_form">
+          <form action="{% url 'transactional_email.emails.test_mail' %}" method="post" id="test_form">
             {% csrf_token %}
             <div class="form-group">
               <label for="config-name" class="col-form-label">Mail Config name:</label>
