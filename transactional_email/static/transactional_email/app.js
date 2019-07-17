@@ -1,3 +1,7 @@
+/**
+ * Just "vanilla" jQuery. Maybe later on I might switch to Vue or React but
+ * I want to avoid a bloated JS setup with webpack for now.
+ */
 (function(global){
   var BASE_URL = '/transactional_email';
 
