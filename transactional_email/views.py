@@ -129,13 +129,25 @@ class TemplateVersionsView(AuthMixin, View):
         instance.save()
         return JsonResponse({'id': pk})
 
-    def post(self, request, pk: int):
+    def post(self, request, pk: int = None):
         """
-        Duplicate a version
+        Create a new version or duplicate a version.
         """
-        pk = TemplateVersion.objects.duplicate(pk)
-        template = TemplateVersion.objects.get(pk=pk).template
-        return JsonResponse({'id': pk, 'template_id': template.pk})
+        if not pk:
+            template_id = request.POST.get('template_id')
+            template = Template.objects.get(pk=int(template_id))
+            _pk = TemplateVersion.objects.create(template=template, test_data={}).pk
+        else:
+            _pk = TemplateVersion.objects.duplicate(pk)
+            template = TemplateVersion.objects.get(pk=pk).template
+        return JsonResponse({'id': _pk, 'template_id': template.pk})
+
+    def delete(self, request, pk: int):
+        version = TemplateVersion.objects.get(pk=pk)
+        template_id = version.template.pk
+        if not version.active:
+            version.delete()
+        return JsonResponse({'status': 'ok', 'template_id': template_id})
 
 
 class TemplateVersionPreviewView(AuthMixin, View):

@@ -17,7 +17,7 @@
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Actions</a>
               <div class="dropdown-menu dropdown-menu-right">
                 <!--<a class="dropdown-item" href="#"><span class="fa fa-pencil"></span> Edit</a>-->
-                <a class="dropdown-item" href="#"><span class="fa fa-plus"></span> Add Version</a>
+                <a class="dropdown-item" href="javascript:window.TE.addVersion({{ template.pk }})"><span class="fa fa-plus"></span> Add Version</a>
                 <a class="dropdown-item text-danger" href="javascript:void(0)" data-toggle="modal" data-target="#delete" data-pk="{{ template.pk }}"><span class="fa fa-trash"></span> Delete</a>
               </div>
             </li>
