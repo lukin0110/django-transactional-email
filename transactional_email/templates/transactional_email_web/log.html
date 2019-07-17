@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="row">
-      <iframe class="preview" src="{% url 'transactional_email.view' pk=log.pk %}"></iframe>
+      <iframe class="preview" src="{% url 'transactional_email.emails.view' pk=log.pk %}"></iframe>
     </div>
   </div>
 {% endblock %}

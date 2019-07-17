@@ -1,32 +1,24 @@
 {% extends "transactional_email_web/base.html" %}
 {% load static i18n %}
 {% block page-title %}Preview: {{ version.name }}{% endblock %}
-{% block title %}{% if version.active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-danger">Inactive</span>{% endif %} Preview: {{ version.name }}{% endblock %}
+{% block title %}{{ version.template.name }}
+  <br><small class="text-muted">{{ version.name }}</small> {% if version.active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-danger">Inactive</span>{% endif %}
+{% endblock %}
+
+{% block toolbar %}
+  <a href="{% url 'transactional_email.templates' %}#template-{{ version.template.pk }}" role="button" class="btn btn-outline-secondary btn-sm mr-2">Close</a>
+  <a href="{% url 'transactional_email.edit' pk=version.pk %}" role="button" class="btn btn-info btn-sm"><span class="fa fa-pencil"></span> Edit Template</a>
+{% endblock %}
 
 {% block content %}
-  <div class="container mt-4 mb-5">
+  <div class="container mb-5">
     <div class="row">
       <div class="col-12">
-        <p>Template: {{ version.template.name }}<br>
-          Version: {{ version.name }}<br>
-          Updated: {{ version.updated }}
-        </p>
+        <p>Updated: {{ version.updated }}</p>
       </div>
     </div>
     <div class="row">
-      <iframe class="preview" src="{% url 'transactional_email.version.preview' pk=version.pk %}"></iframe>
+      <iframe class="preview" src="{% url 'transactional_email.versions.preview' pk=version.pk %}"></iframe>
     </div>
   </div>
 {% endblock %}
-
-
-class TemplateVersion(models.Model):
-    active = models.BooleanField(
-        default=False,
-        help_text='Active version'
-    )
-
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True, null=True)
-
-    objects = TemplateVersionManager()

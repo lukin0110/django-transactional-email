@@ -1,0 +1,80 @@
+{% load static i18n %}<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>Edit template - {{ version.template.name }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{% static 'transactional_email/app.css' %}" rel="stylesheet">
+
+    <!-- CodeMirror Walhalla -->
+    <link rel="stylesheet" href="{% static 'transactional_email/codemirror/codemirror.css' %}">
+    <link rel="stylesheet" href="{% static 'transactional_email/codemirror/theme/monokai.css' %}">
+    <script src="{% static 'transactional_email/codemirror/codemirror.js' %}"></script>
+    <script src="{% static 'transactional_email/codemirror/addon/mode/overlay.js' %}"></script>
+    <script src="{% static 'transactional_email/codemirror/mode/xml/xml.js' %}"></script>
+    <script src="{% static 'transactional_email/codemirror/mode/htmlmixed/htmlmixed.js' %}"></script>
+    <script src="{% static 'transactional_email/codemirror/mode/django/django.js' %}"></script>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <main role="main" class="col-md-12 ml-sm-auto col-lg-12">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h6>{{ version.template.name }}
+              <br><small class="text-muted">{{ version.name }} {% if version.active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-danger">Inactive</span>{% endif %}</small>
+            </h6>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <div class="btn-group mr-2">
+                <a href="{% url 'transactional_email.templates' %}#template-{{ version.template.pk }}" role="button" class="btn btn-outline-secondary btn-sm mr-2">Cancel</a>
+                <a href="javascript:$('#form').submit();" role="button" class="btn btn-info btn-sm"><span class="fa fa-save"></span> Save Template</a>
+              </div>
+            </div>
+          </div>
+
+          <form method="POST" action="{% url 'transactional_email.edit' pk=version.pk %}" id="form">
+            <div class="row">
+              <div class="col-7 h-25 d-inline-block" style="max-height: 200px">
+                {% csrf_token %}
+                <textarea id="code" name="content">{{ version.content|safe }}</textarea>
+              </div>
+              <div class="col-5">
+                <textarea id="test_data" name="test_data" cols="40" rows="7">{{ form.test_data.value|safe }}</textarea>
+              </div>
+            </div>
+          </form>
+        </main>
+      </div>
+    </div>
+
+    <div id="toast" class="toast text-white bg-success" style="position: fixed; top: 15px; right: 15px; z-index: 1000;display: none;" data-delay="2000">
+      <div class="toast-body">Hello, world!</div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'transactional_email/app.js' %}"></script>
+    <script>
+      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        mode: "django",
+        indentUnit: 2,
+        indentWithTabs: true,
+        theme: 'monokai'
+      });
+      editor.setSize("100%");
+
+      // Fix the size of CodeMirror
+      $(window).resize(function() {
+        var height = $(window).height() - 100;
+        editor.setSize('100%', height + 'px');
+      });
+
+      $(window).trigger('resize');
+    </script>
+  </body>
+</html>

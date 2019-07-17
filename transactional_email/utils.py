@@ -98,7 +98,7 @@ def render(config_name: str, to_email: str, context: dict) -> Message:
     # Add a dump of the context to the context for debugging purposes
     _context.update(context_dump=json.dumps(_context, indent=4))
     template = loader.get_template(mail_config.template.name)
-    rendered = template.render(context)
+    rendered = template.render(_context)
     return Message(
         subject=subject,
         from_email=from_email,

@@ -47,7 +47,7 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h5>{% block title %}Transactional Email{% endblock %}</h5>
+            <h6>{% block title %}Transactional Email{% endblock %}</h6>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
                 {% block toolbar %}{% endblock %}
@@ -90,15 +90,17 @@
     <script src="{% static 'transactional_email/app.js' %}"></script>
     {% block javascript %}{% endblock %}
     <script>
+      var messages = {
+        'deleted': 'Template deleted',
+        'duplicated': 'Template version duplicated',
+        'activated': 'Template version activated',
+        'updated': 'Template version updated'
+      };
+
       $(document).ready(function() {
-        window.TE.configure('{% url "transactional_email.index" %}api');
-        {% if 'deleted' == request.GET.notification %}
-        window.TE.toast('Template deleted');
-        {% elif 'duplicated' == request.GET.notification  %}
-        window.TE.toast('Template version duplicated');
-        {% elif 'activated' == request.GET.notification  %}
-        window.TE.toast('Template version activated');
-        {% endif %}
+        window.TE.configure('{% url "transactional_email.index" %}v1');
+        var msg = messages['{{ request.GET.notification }}'];
+        if(msg) window.TE.toast(msg);
       });
     </script>
   </body>
