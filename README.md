@@ -79,5 +79,6 @@ urlpatterns = [
 
 ## TODO
 - use codemirror html editor for template editing
+- add code example on how to use
 - push to pypi
 - dump templates from db to disk

@@ -42,6 +42,7 @@
                   <a class="dropdown-toggle float-right text-muted" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><span class="fa fa-cog"></span></a>
                   <div class="dropdown-menu dropdown-menu-right">
                     {% if not version.active %}<a class="dropdown-item" href="javascript:window.TE.makeActive({{ version.pk }})"><span class="fa fa-check"></span> Make Active</a>{% endif %}
+                    <a class="dropdown-item" href="{% url 'transactional_email.preview' pk=version.pk %}" target="_blank"><span class="fa fa-eye"></span> Preview</a>
                     <a class="dropdown-item" href="#"><span class="fa fa-pencil"></span> Edit</a>
                     <a class="dropdown-item" href="javascript:window.TE.duplicateVersion({{ version.pk }})"><span class="fa fa-copy"></span> Duplicate</a>
                     {% if not version.active %}<a class="dropdown-item" href="javascript:window.TE.deleteVersion({{ version.pk }})"><span class="fa fa-trash"></span> Delete</a>{% endif %}

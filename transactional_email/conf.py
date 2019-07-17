@@ -16,6 +16,10 @@ TEMPLATE_CONTENT_DEFAULT = '<h1>Default mail</h1>' \
           '<br>To: {{ to }}' \
           '<br><br>Context dump: <pre>{{ context_dump }}</pre>'
 
+# By default the 'active' template version will be loaded by the template. A
+# specific version can be loaded by added the separator and version pk
+VERSION_SEPARATOR = '__##__'
+
 # Defaults for the subject and from e-mail
 DEFAULT_SUBJECT = 'Auto generated subject'
 
@@ -30,4 +34,10 @@ BASE_URL = getattr(
     settings,
     'TRANSACTIONAL_EMAIL_BASE_URL',
     ''
+)
+
+DUMMY_EMAIL = getattr(
+    settings,
+    'TRANSACTIONAL_EMAIL_DUMMY_EMAIL',
+    'jeffrey@dudeism.com'
 )

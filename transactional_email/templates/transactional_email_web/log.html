@@ -1,0 +1,22 @@
+{% extends "transactional_email_web/base.html" %}
+{% load static i18n %}
+{% block page-title %}Email Log: {{ log.pk }}{% endblock %}
+{% block title %}Email Log: {{ log.pk }}{% endblock %}
+
+{% block content %}
+  <div class="container mt-4 mb-5">
+    <div class="row">
+      <div class="col-12">
+        <p>When: {{ log.when }}<br>
+          From: {{ log.from_email }}<br>
+          To: {{ log.to_email }}<br>
+          Subject: {{ log.subject }}<br>
+          <span class="text-muted">Service: {{ log.service }} ({{ log.message_id }})</span>
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <iframe class="preview" src="{% url 'transactional_email.view' pk=log.pk %}"></iframe>
+    </div>
+  </div>
+{% endblock %}
