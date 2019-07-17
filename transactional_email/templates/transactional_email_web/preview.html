@@ -1,0 +1,32 @@
+{% extends "transactional_email_web/base.html" %}
+{% load static i18n %}
+{% block page-title %}Preview: {{ version.name }}{% endblock %}
+{% block title %}{% if version.active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-danger">Inactive</span>{% endif %} Preview: {{ version.name }}{% endblock %}
+
+{% block content %}
+  <div class="container mt-4 mb-5">
+    <div class="row">
+      <div class="col-12">
+        <p>Template: {{ version.template.name }}<br>
+          Version: {{ version.name }}<br>
+          Updated: {{ version.updated }}
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <iframe class="preview" src="{% url 'transactional_email.version.preview' pk=version.pk %}"></iframe>
+    </div>
+  </div>
+{% endblock %}
+
+
+class TemplateVersion(models.Model):
+    active = models.BooleanField(
+        default=False,
+        help_text='Active version'
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True, null=True)
+
+    objects = TemplateVersionManager()

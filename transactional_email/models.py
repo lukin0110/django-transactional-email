@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timezone import now
-from .conf import TEMPLATE_PREFIX
+from .conf import TEMPLATE_PREFIX, VERSION_SEPARATOR
 
 
 class Template(models.Model):
@@ -108,6 +108,10 @@ class TemplateVersion(models.Model):
 
     def __str__(self):
         return f'Version: {self.name} ({self.template.name})'
+
+    @property
+    def version_name(self):
+        return f'{self.template.name}{VERSION_SEPARATOR}{self.pk}'
 
 
 class MailConfig(models.Model):

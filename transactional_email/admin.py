@@ -34,7 +34,8 @@ class TemplateAdmin(admin.ModelAdmin, SuperUserMixin):
 
 @admin.register(TemplateVersion)
 class TemplateVersionAdmin(admin.ModelAdmin, SuperUserMixin):
-    list_display = ('template', 'name', 'active', 'updated', 'show_actions')
+    list_display = ('pk', 'template', 'name', 'active', 'updated', 'show_actions')
+    list_display_links = ('pk', 'template')
     list_filter = ('active',)
     search_fields = ('template__name', 'name')
     autocomplete_fields = ('template',)

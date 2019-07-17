@@ -1,7 +1,7 @@
 from django.template import Origin, TemplateDoesNotExist
 from django.template.loaders.base import Loader
 from .models import Template, TemplateVersion
-from .conf import TEMPLATE_PREFIX
+from .conf import TEMPLATE_PREFIX, VERSION_SEPARATOR
 
 
 class DatabaseLoader(Loader):
@@ -19,12 +19,19 @@ class DatabaseLoader(Loader):
             yield from ()
 
     def get_contents(self, origin):
-        template_name = origin.template_name
+        template_name = origin.template_name    # type: str
         print(template_name)
         try:
-            template = Template.objects.get(name=template_name)
-            version = TemplateVersion.objects.get(template=template, active=True)
-            return version.content
+            arr = template_name.split(VERSION_SEPARATOR)
+            if len(arr) == 1:
+                template = Template.objects.get(name=arr[0])
+                version = TemplateVersion.objects.get(template=template, active=True)
+                return version.content
+            elif len(arr) == 2:
+                version = TemplateVersion.objects.get(pk=int(arr[1]))
+                return version.content
+            else:
+                raise ValueError(f'Invalid template name: {template_name}')
         except Template.DoesNotExist:
             raise TemplateDoesNotExist(template_name)
         except TemplateVersion.DoesNotExist:

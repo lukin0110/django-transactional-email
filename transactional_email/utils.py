@@ -97,16 +97,28 @@ def render(config_name: str, to_email: str, context: dict) -> Message:
 
     # Add a dump of the context to the context for debugging purposes
     _context.update(context_dump=json.dumps(_context, indent=4))
-
     template = loader.get_template(mail_config.template.name)
-    rendered = template.render(_context)
-
+    rendered = template.render(context)
     return Message(
         subject=subject,
         from_email=from_email,
         to_email=to_email,
         body=rendered
     )
+
+
+def render_version(template_version_name: str, context: dict) -> str:
+    _context = copy.deepcopy(context) if context else {}
+    _context.update({
+        'subject': conf.DEFAULT_SUBJECT,
+        'from': conf.DEFAULT_FROM_EMAIL,
+        'to': conf.DUMMY_EMAIL,
+        'base_url': conf.BASE_URL
+    })
+    _context.update(context_dump=json.dumps(_context, indent=4))
+    template = loader.get_template(template_version_name)
+    rendered = template.render(_context)
+    return rendered
 
 
 def send(subject: str, from_email: str, to_email: str, body: str, connection=None) -> int:
