@@ -25,8 +25,10 @@ However, you can still use Transactional Email services as email backend to actu
 
 #### 1. Install python package
 ```bash
-pip install django-transactional-email
+pip install git+git://github.com/lukin0110/django-transactional-email@master#egg=django-transactional-email
+#pip install django-transactional-email
 ```
+Note: package has not been uploaded to PyPi yet.
 
 #### 2. Add the Django app
 Add `transactional_email` to `INSTALLED_APPS` in `settings.py`:
@@ -76,9 +78,13 @@ urlpatterns = [
 ]
 ```
 
+## How to use
+```python
+from transactional_email import issue
+issue('test.mail_config', 'jeffrey@dudeism.com', {'foo': 'bar'})
+```
 
 ## TODO
-- use codemirror html editor for template editing
 - add code example on how to use
-- push to pypi
 - dump templates from db to disk
+- push to pypi

@@ -1,10 +1,9 @@
 from textwrap import shorten, fill
 from django.contrib import admin
 from django.contrib.postgres.fields import JSONField
-from django.conf.urls import url
+from django.contrib.admin import SimpleListFilter
 from django.db.models import TextField
 from django.forms import Textarea
-from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.html import format_html
 from .models import Template, TemplateVersion, MailConfig, EmailLog
@@ -45,35 +44,18 @@ class TemplateVersionAdmin(admin.ModelAdmin, SuperUserMixin):
         JSONField: {'widget': Textarea(attrs={'rows': 20, 'cols': 120})},
     }
 
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            url(
-                r'^(?P<id>.+)/view$',
-                self.admin_site.admin_view(self.raw_view),
-                name='template-version-view',
-            ),
-        ]
-        return custom_urls + urls
-
-    def raw_view(self, request, id, *args, **kwargs):
-        from django.template import Template, Context
-        template_version = TemplateVersion.objects.get(pk=id)
-        t = Template(template_version.content)
-        c = Context(template_version.test_data)
-        return HttpResponse(t.render(c))
-
     def show_actions(self, obj: EmailLog):
         return format_html(
             '<a href="{url}" target="_blank">View</a>',
-            url=reverse('admin:template-version-view', args=[obj.pk])
+            url=reverse('transactional_email.versions.preview', args=[obj.pk])
         )
     show_actions.short_description = 'Actions'
 
 
 @admin.register(MailConfig)
 class MailConfigAdmin(admin.ModelAdmin, SuperUserMixin):
-    list_display = ('name', 'template', 'show_description', 'updated')
+    list_display = ('pk', 'name', 'template', 'show_description', 'updated')
+    list_display_links = ('pk', 'name')
     search_fields = ('template__name', 'name', 'description')
     autocomplete_fields = ('template',)
 
@@ -84,11 +66,30 @@ class MailConfigAdmin(admin.ModelAdmin, SuperUserMixin):
     show_description.short_description = 'Description'
 
 
+class ServiceFilter(SimpleListFilter):
+    title = 'service'
+    parameter_name = 'service2'
+
+    def lookups(self, request, model_admin):
+        services = EmailLog.objects.order_by('service').distinct('service')
+        return [(
+            s.service if s.service else '_NONE_',
+            s.service_short if s.service_short else '-'
+        ) for s in services]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == '_NONE_':
+            return queryset.filter(service__isnull=True)
+        if value:
+            return queryset.filter(service=self.value())
+
+
 @admin.register(EmailLog)
 class EmailLogAdmin(admin.ModelAdmin):
     list_display = ['when', 'from_email', 'to_email', 'subject', 'ok',
-                    'show_service', 'show_message_id',  'show_actions']
-    list_filter = ['ok', 'service']
+                    'service_short', 'show_message_id',  'show_actions']
+    list_filter = (ServiceFilter, 'ok')
     readonly_fields = ['when', 'from_email', 'to_email', 'subject', 'body',
                        'ok', 'service', 'message_id']
     search_fields = ['subject', 'body', 'from_email', 'to_email']
@@ -100,22 +101,7 @@ class EmailLogAdmin(admin.ModelAdmin):
         return request.user.is_superuser
 
     def has_delete_permission(self, request, obj=None):
-        return True
-
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            url(
-                r'^(?P<id>.+)/view$',
-                self.admin_site.admin_view(self.raw_view),
-                name='transactional-email-log-view',
-            ),
-        ]
-        return custom_urls + urls
-
-    def raw_view(self, request, id, *args, **kwargs):
-        record = EmailLog.objects.get(pk=id)
-        return HttpResponse(record.body)
+        return request.user.is_superuser
 
     def show_message_id(self, obj: EmailLog) -> str:
         if obj.message_id:
@@ -133,6 +119,6 @@ class EmailLogAdmin(admin.ModelAdmin):
     def show_actions(self, obj: EmailLog):
         return format_html(
             '<a href="{url}" target="_blank">View</a>',
-            url=reverse('admin:transactional-email-log-view', args=[obj.pk])
+            url=reverse('transactional_email.emails.view', args=[obj.pk])
         )
     show_actions.short_description = 'Actions'

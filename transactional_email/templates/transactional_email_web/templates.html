@@ -36,7 +36,10 @@
             <tbody>
             {% for version in template.versions %}
               <tr id="version-{{ version.pk }}">
-                <td>{{ version.name }}{% if version.active %} <span class="badge badge-success">Active</span>{% endif %}</td>
+                <td>{{ version.name }}
+                  {% if version.active %} <span class="badge badge-success">Active</span>{% endif %}
+                  {% if version.is_new %} <span class="badge badge-primary">New</span>{% endif %}
+                </td>
                 <td>{{ version.updated }}</td>
                 <td>
                   <a class="dropdown-toggle float-right text-muted" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><span class="fa fa-cog"></span></a>
