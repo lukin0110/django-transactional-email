@@ -62,6 +62,7 @@ class TemplateVersionManager(models.Manager):
     def duplicate(self, pk: int):
         obj = super().get(pk=pk)
         obj.name = _default_name()
+        obj.active = False
         obj.pk = None
         obj.save()
         return obj.pk
@@ -112,6 +113,14 @@ class TemplateVersion(models.Model):
     @property
     def version_name(self):
         return f'{self.template.name}{VERSION_SEPARATOR}{self.pk}'
+
+    @property
+    def is_new(self):
+        """
+        A version is considered new if it is less then 10 minutes created
+        from "now".
+        """
+        return (now() - self.created).seconds < 10*60
 
 
 class MailConfig(models.Model):

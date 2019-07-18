@@ -20,7 +20,6 @@ class DatabaseLoader(Loader):
 
     def get_contents(self, origin):
         template_name = origin.template_name    # type: str
-        print(template_name)
         try:
             arr = template_name.split(VERSION_SEPARATOR)
             if len(arr) == 1:

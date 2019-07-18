@@ -77,3 +77,11 @@ body {
   /*height: 723px;*/
   height: 500px;
 }
+
+#toast {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1000;
+  display: none;
+}

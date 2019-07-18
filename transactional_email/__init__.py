@@ -8,7 +8,7 @@ To avoid import hell when Django is loading it's required to wrap all the
 render and send functions and use local imports. Django will fail to load
 this app if models are imported in the __init__.py file.
 """
-__version__ = '0.3.0'
+__version__ = '0.1.0'
 
 default_app_config = 'transactional_email.apps.TransactionalEmailConfig'
 
