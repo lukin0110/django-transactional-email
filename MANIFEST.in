@@ -1,0 +1,3 @@
+include LICENSE README.md MANIFEST.in CONTRIBUTING.md
+recursive-include transactional_email/templates *
+recursive-include transactional_email/static *

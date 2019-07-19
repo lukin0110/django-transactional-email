@@ -23,12 +23,10 @@ setup(
     url='https://github.com/lukin0110/django-transactional-email/',
     platforms='any',
     packages=find_packages(),
+    include_package_data=True,
     license='Apache License 2.0',
     zip_safe=False,
     python_requires=">=3.6",
-    package_data={
-        'transactional_email': [],
-    },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
