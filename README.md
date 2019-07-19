@@ -13,14 +13,14 @@ templated emails.
 
 #### Table Of Contents
 
-* [Why this exists](#why-this-exists)
+* [Why this exists?](#why-this-exists)
 * [How to use](#how-to-use)
 * [Setup](#setup)
 
 
 ## Why this exists?
 
-* avoid dependency and lock-in on 3th party Transactional email services. Eg: SendGrid, Mailgun, Mandrill, etc
+* avoid dependency and lock-in on 3th party Transactional email services. Eg: [SendGrid](https://sendgrid.com/), [Mailgun](https://www.mailgun.com/), [Mandrill](http://mandrill.com), etc
 * dynamic copy & content creation of mail templates
 * separation of concerns. Disconnect copy/content from your codebase and development flow. No new deployment needed when marketing wants to update their fancy copy.
 
@@ -29,8 +29,8 @@ However, you can still use Transactional Email services as email backend to actu
 
 
 ## How to use
-The `transactional_email` only exposes 3 methods. You should only interface with these methods and try to stay away
-from accessing the models and other functionality directly. 
+The `transactional_email` app only exposes 3 functions. You should only interface with these functions and try to stay 
+away from accessing the models and other functionality directly. 
 * `issue`: render a transactional email and send it
 * `render`: render a transactional email
 * `send`: send an email
@@ -115,5 +115,4 @@ urlpatterns = [
 
 ## TODO
 - add code example on how to use
-- dump templates from db to disk
 - push to pypi
