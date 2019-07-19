@@ -29,8 +29,7 @@ class DatabaseLoader(Loader):
             elif len(arr) == 2:
                 version = TemplateVersion.objects.get(pk=int(arr[1]))
                 return version.content
-            else:
-                raise ValueError(f'Invalid template name: {template_name}')
+            raise ValueError(f'Invalid template name: {template_name}')
         except Template.DoesNotExist:
             raise TemplateDoesNotExist(template_name)
         except TemplateVersion.DoesNotExist:
