@@ -5,11 +5,18 @@
 `transactional_email` is a Django app that manages templates and the configurations of *transactional emails*. 
 A transactional email is a type of email that's triggered by a user action on a website or mobile app. Some common 
 examples of transactional emails include password resets, shipping confirmations, invoices and receipts, account 
-notifications, social media updates, and welcome emails.
+notifications, social media updates, and welcome emails. :fire: :fire:
 
 This app is build on top of the standard [Django email functionality](https://docs.djangoproject.com/en/2.2/topics/email/) 
-and allows you to store mail templates in the database. The Django templating engine is used to load and send
+and allows you to store mail templates in the database. The Django templating engine is used to load, render and send
 templated emails.
+
+#### Table Of Contents
+
+* [Why this exists](#why-this-exists)
+* [How to use](#how-to-use)
+* [Setup](#setup)
+
 
 ## Why this exists?
 
@@ -19,6 +26,34 @@ templated emails.
 
 However, you can still use Transactional Email services as email backend to actually send your mails from Django. Cfr: 
 [Anymail](https://github.com/anymail/django-anymail).
+
+
+## How to use
+The `transactional_email` only exposes 3 methods. You should only interface with these methods and try to stay away
+from accessing the models and other functionality directly. 
+* `issue`: render a transactional email and send it
+* `render`: render a transactional email
+* `send`: send an email
+
+Issue a transactional email:
+```python
+from transactional_email import issue
+issue('test.mail_config', 'jeffrey@dudeism.com', {'foo': 'bar'})
+```
+
+Render a message (it won't send it):
+```python
+from transactional_email import render
+message = render('test.mail_config', 'jeffrey@dudeism.com', {'foo': 'bar'})
+print(message)
+```
+
+Send an email:
+```python
+from transactional_email import render, send
+message = render('test.mail_config', 'jeffrey@dudeism.com', {'foo': 'bar'})
+send(message.subject, message.from_email, message.to_email, message.body)
+```
 
 
 ## Setup
@@ -69,19 +104,13 @@ TEMPLATES = [
 ```
 
 #### 4. Configure url patterns
-Add `transactional_email.urls` to the url patters in `urls.py`:
+Add `transactional_email.urls` to the url patterns in `urls.py`:
 ```python
 urlpatterns = [
     ...
     path('transactional_email/', include('transactional_email.urls')),
     ...
 ]
-```
-
-## How to use
-```python
-from transactional_email import issue
-issue('test.mail_config', 'jeffrey@dudeism.com', {'foo': 'bar'})
 ```
 
 ## TODO
