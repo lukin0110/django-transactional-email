@@ -57,7 +57,10 @@ class TemplateVersionManager(models.Manager):
 
     def active(self, template_name: str):
         qs = super().get_queryset()
-        return qs.get(template__name=template_name, active=True)
+        try:
+            return qs.get(template__name=template_name, active=True)
+        except models.ObjectDoesNotExist:
+            return None
 
     def duplicate(self, pk: int):
         obj = super().get(pk=pk)

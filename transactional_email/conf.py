@@ -36,6 +36,9 @@ BASE_URL = getattr(
     ''
 )
 
+# Directory name to be used to dump & load templates
+TEMPLATES_DIR_NAME = 'templates_dump'
+
 DUMMY_EMAIL = getattr(
     settings,
     'TRANSACTIONAL_EMAIL_DUMMY_EMAIL',
