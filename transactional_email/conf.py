@@ -14,7 +14,7 @@ TEMPLATE_PREFIX = 'transactional_email/'
 TEMPLATE_CONTENT_DEFAULT = '<h1>Default mail</h1>' \
           '<br>From: {{ from }}' \
           '<br>To: {{ to }}' \
-          '<br><br>Context dump: <pre>{{ context_dump }}</pre>'
+          '<br><br>Context dump: <pre>{{ te_context_dump }}</pre>'
 
 # By default the 'active' template version will be loaded by the template. A
 # specific version can be loaded by added the separator and version pk

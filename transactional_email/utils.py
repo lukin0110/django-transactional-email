@@ -5,9 +5,11 @@ from collections import namedtuple
 from datetime import datetime
 from typing import Tuple
 from os.path import join
-from django.db import transaction
+from django.db import transaction, models
+from django.core import serializers
 from django.core.mail import EmailMessage
 from django.template import loader
+from django.utils.text import slugify
 from .models import Template, TemplateVersion, MailConfig, EmailLog
 from . import conf
 
@@ -20,6 +22,14 @@ Message = namedtuple('Message', [
     'to_email',
     'body'
 ])
+
+
+def _dump(obj) -> str:
+    class ObjectEncoder(json.JSONEncoder):
+        def default(self, o):
+            if isinstance(o, models.Model):
+                return serializers.serialize('json', [o])
+    return json.dumps(obj, cls=ObjectEncoder, indent=4)
 
 
 @transaction.atomic
@@ -47,7 +57,8 @@ def _get_mail_config(
     if mail_config:
         return mail_config, False
 
-    template_name = join(conf.TEMPLATE_PREFIX, f'{config_name}.html')
+    _normalized = slugify(config_name.lower().replace('.', '_'))
+    template_name = join(conf.TEMPLATE_PREFIX, f'{_normalized}.html')
     template = Template.objects.create(
         name=template_name
     )
@@ -92,11 +103,12 @@ def render(config_name: str, to_email: str, context: dict) -> Message:
         'subject': subject,
         'from': from_email,
         'to': to_email,
-        'base_url': conf.BASE_URL
+        'te_base_url': conf.BASE_URL,
+        'te_template': mail_config.template.name,
     })
 
     # Add a dump of the context to the context for debugging purposes
-    _context.update(context_dump=json.dumps(_context, indent=4))
+    _context.update(te_context_dump=_dump(_context))
     template = loader.get_template(mail_config.template.name)
     rendered = template.render(_context)
     return Message(
@@ -115,7 +127,7 @@ def render_version(template_version_name: str, context: dict) -> str:
         'to': conf.DUMMY_EMAIL,
         'base_url': conf.BASE_URL
     })
-    _context.update(context_dump=json.dumps(_context, indent=4))
+    _context.update(te_context_dump=_dump(_context))
     template = loader.get_template(template_version_name)
     rendered = template.render(_context)
     return rendered
