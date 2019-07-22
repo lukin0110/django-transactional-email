@@ -125,7 +125,7 @@ def render_version(template_version_name: str, context: dict) -> str:
         'subject': conf.DEFAULT_SUBJECT,
         'from': conf.DEFAULT_FROM_EMAIL,
         'to': conf.DUMMY_EMAIL,
-        'base_url': conf.BASE_URL
+        'te_base_url': conf.BASE_URL
     })
     _context.update(te_context_dump=_dump(_context))
     template = loader.get_template(template_version_name)
