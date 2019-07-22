@@ -108,11 +108,17 @@ class EmailLogsView(AuthMixin, View):
         """
         Sends a test mail. Template will be rendered with test data.
         """
-        name = request.POST.get('config')
+        config_name = request.POST.get('config')
         email = request.POST.get('recipient')
-        config = MailConfig.objects.get(name=name)
+        config = MailConfig.objects.get(name=config_name)
         version = TemplateVersion.objects.active(config.template.name)
-        pk = utils.issue(name, email, version.test_data)
+        message = utils.render(config_name, email, version.test_data)
+        pk = utils.send(
+            f'[TEST] {message.subject}',
+            message.from_email,
+            message.to_email,
+            message.body
+        )
         return JsonResponse({'id': pk})
 
 
